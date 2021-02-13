@@ -1,6 +1,4 @@
-/*
-    DOM Data Structure
-*/
+//DOM Data Structure
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -26,6 +24,12 @@ pub struct ElementData {
     attributes: AttrMap,
 }
 
+impl ElementData {
+    pub fn id(&self) -> Option<&String> {
+        self.attributes.get("id")
+    }
+}
+
 pub fn create_node_with_text(node_text: String) -> Node {
     Node {
         children: Vec::new(),
@@ -48,7 +52,7 @@ fn test_id() {
     assert_eq!(
         ElementData {
             tag_name: "".to_string(),
-            attrs: HashMap::new(),
+            attributes: HashMap::new(),
         }
         .id(),
         None
