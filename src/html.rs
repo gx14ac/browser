@@ -61,7 +61,6 @@ impl Parser {
     /*
         TextNodeをパース
     */
-    // '<' 以外の文字を返す
     fn parse_text(&mut self) -> dom::Node {
         dom::Node::text(self.consume_while(|c| c != '<'))
     }
@@ -108,9 +107,7 @@ impl Parser {
     */
     fn parse_attr(&mut self) -> Result<(String, String), ()> {
         let name = self.parse_tag_name();
-        if self.consume_char() == '=' {
-            return Err(());
-        }
+        assert_eq!(self.consume_char(), '=');
 
         let value = self.parse_attr_value();
         Ok((name, value))
@@ -126,7 +123,7 @@ impl Parser {
 
     /*
         属性をパースし、返す
-        オープニングタグ(>)の最後に到達するまで、名前の後に=が続き、引用符で囲まれた文字列を繰り返し探しています。
+        オープニングタグの最後(>)に到達するまで、名前の後に=が続き、引用符で囲まれた文字列を繰り返し探しています。
     */
     fn parse_attributes(&mut self) -> dom::AttrMap {
         let mut attributes = HashMap::new();
@@ -180,17 +177,14 @@ impl Parser {
         cur_char
     }
 
-    // inputに対してposのpositionから次の文字を取り出す
     fn next_char(&self) -> char {
         self.input[self.pos..].chars().next().unwrap()
     }
 
-    // posの位置にある接頭辞がsとマッチするか
     fn starts_with(&self, s: &str) -> bool {
         self.input[self.pos..].starts_with(s)
     }
 
-    // 全ての文字列を対象とたかを確認
     fn eof(&self) -> bool {
         self.pos >= self.input.len()
     }
@@ -222,3 +216,17 @@ fn test_parse() {
         ),
     );
 }
+/*
+    STEP
+    1. html string
+    2. nodesの初期化. pos:0, input: html string
+    3. parse_nodes()
+        3.1 cousume_whileで空白を消す
+        3.2 eof(文字列を全てみたか) || "</" かどうか true or false
+        3.3 true => nodesを返す
+        3.4 false => nodesにparse_nodeの結果をpushする
+        // 再帰的に繰り返す
+        parse_node:
+            < => parse_element
+            _ => parse_text
+*/
