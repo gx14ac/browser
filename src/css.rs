@@ -279,18 +279,25 @@ fn valid_identifier_char(c: char) -> bool {
 
 #[test]
 fn test() {
-    let src = "
-    html {
+    let stylesheet = "
+    #id {
         color: #ffffff;
       }";
 
-    let stylesheet = parse(src.to_string());
+    let parsed_stylesheet = parse(stylesheet.to_string());
     let rules = vec![Rule {
-        selectors: vec![Selector::Simple(SimpleSelector {
-            tag_name: Some("html".to_string()),
-            id: None,
-            class: Vec::new(),
-        })],
+        selectors: vec![
+            // Selector::Simple(SimpleSelector {
+            //     tag_name: Some("html".to_string()),
+            //     id: None,
+            //     class: Vec::new(),
+            // }),
+            Selector::Simple(SimpleSelector {
+                tag_name: None,
+                id: Some("id".to_string()),
+                class: Vec::new(),
+            }),
+        ],
         declarations: vec![Declaration {
             name: "color".to_string(),
             value: Value::ColorValue(Color {
@@ -302,5 +309,5 @@ fn test() {
         }],
     }];
 
-    assert_eq!(stylesheet, Stylesheet { rules: rules })
+    assert_eq!(parsed_stylesheet, Stylesheet { rules: rules })
 }
