@@ -1,14 +1,14 @@
 //DOM Data Structure
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 pub type AttrMap = HashMap<String, String>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
-    children: Vec<Node>,
-    node_type: NodeType,
+    pub children: Vec<Node>,
+    pub node_type: NodeType,
 }
 
 impl fmt::Display for Node {
@@ -44,13 +44,20 @@ pub enum NodeType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementData {
-    tag_name: String,
+    pub tag_name: String,
     attributes: AttrMap,
 }
 
 impl ElementData {
     pub fn id(&self) -> Option<&String> {
         self.attributes.get("id")
+    }
+
+    pub fn classes(&self) -> HashSet<&str> {
+        match self.attributes.get("class") {
+            Some(classlist) => classlist.split(' ').collect(),
+            None => HashSet::new(),
+        }
     }
 }
 
