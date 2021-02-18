@@ -19,7 +19,7 @@ pub struct StyledNode<'a> {
 }
 
 impl<'a> StyledNode<'a> {
-    fn value(&self, name: &str) -> Option<Value> {
+    pub fn value(&self, name: &str) -> Option<Value> {
         self.specified_values.get(name).map(|v| v.clone())
     }
 
@@ -32,6 +32,11 @@ impl<'a> StyledNode<'a> {
             },
             _ => Display::Inline,
         }
+    }
+
+    pub fn lookup(&self, name: &str, fallback_name: &str, default: &Value) -> Value {
+        self.value(name)
+            .unwrap_or_else(|| self.value(fallback_name).unwrap_or_else(|| default.clone()))
     }
 }
 
