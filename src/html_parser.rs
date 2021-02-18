@@ -114,42 +114,12 @@ impl interface::HtmlParserTrait for HtmlParser {
     }
 
     // 現在の位置の文字列を取得し、位置を進める
-    // TODO: Fix This Function;
     fn consume_char(&mut self) -> Result<char, error::Error> {
-        let current_char = self.get_current_char();
-
-        match current_char {
-            Ok((_, char)) => {
-                let next_position = self.to_next_position();
-                match next_position {
-                    Ok(()) => Ok(char),
-                    Err(err) => Err(err),
-                }
-                // Ok(char)
-            }
-            Err(err) => Err(err),
-        }
-    }
-
-    fn to_next_position(&mut self) -> Result<(), error::Error> {
-        let mut char_indices = self.source[self.position..].char_indices();
-        let current_char = char_indices.next().ok_or(error::Error::ReadError);
-
-        match &current_char {
-            Ok((pos, _)) => {
-                self.position += pos;
-                println!("{}", self.position);
-                println!("{}", pos);
-                Ok(())
-            }
-            Err(err) => Err(err.clone()),
-        }
-    }
-
-    fn get_current_char(&self) -> Result<(usize, char), error::Error> {
-        let mut char_indices = self.source[self.position..].char_indices();
-        let current_char = char_indices.next().ok_or(error::Error::ReadError);
-        current_char
+        let mut char_indicies = self.source[self.position..].char_indices();
+        let (_, cur_char) = char_indicies.next().unwrap();
+        let (next_pos, _) = char_indicies.next().unwrap_or((1, ' '));
+        self.position += next_pos;
+        Ok(cur_char)
     }
 
     fn next_char(&self) -> Result<char, error::Error> {

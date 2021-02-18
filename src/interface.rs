@@ -27,10 +27,6 @@ pub trait HtmlParserTrait {
     // 現在の位置の文字列を取得し、位置を進める
     fn consume_char(&mut self) -> Result<char, error::Error>;
 
-    fn to_next_position(&mut self) -> Result<(), error::Error>;
-
-    fn get_current_char(&self) -> Result<(usize, char), error::Error>;
-
     fn next_char(&self) -> Result<char, error::Error>;
 
     fn starts_with(&self, s: &str) -> bool;
