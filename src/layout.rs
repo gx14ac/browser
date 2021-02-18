@@ -5,7 +5,7 @@ use css::Value::{Keyword, Length};
 use std::default::Default;
 use style::StyledNode;
 
-enum BoxType<'a> {
+pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
     InlineNode(&'a StyledNode<'a>),
     AnonymousBlock,
@@ -42,10 +42,10 @@ impl Dimensions {
 
 #[derive(Default, Copy, Clone)]
 pub struct Rect {
-    x: f32,
-    y: f32,
-    width: f32,
-    height: f32,
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
 }
 
 impl Rect {
@@ -61,16 +61,16 @@ impl Rect {
 
 #[derive(Default, Copy, Clone)]
 pub struct EdgeSizes {
-    left: f32,
-    right: f32,
-    top: f32,
-    bottom: f32,
+    pub left: f32,
+    pub right: f32,
+    pub top: f32,
+    pub bottom: f32,
 }
 
 pub struct LayoutBox<'a> {
     pub dimensions: Dimensions,
-    box_type: BoxType<'a>,
-    children: Vec<LayoutBox<'a>>,
+    pub box_type: BoxType<'a>,
+    pub children: Vec<LayoutBox<'a>>,
 }
 
 impl<'a> LayoutBox<'a> {

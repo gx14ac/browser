@@ -19,31 +19,24 @@ pub fn parse(source: String) -> dom::Node {
     }
 }
 
-#[derive(Debug)]
 pub struct Parser {
     pos: usize,    // 文字列位置
     input: String, // 入力文字列
 }
 
 impl Parser {
-    fn new(input: String) -> Parser {
-        Parser {
-            pos: 0,
-            input: input,
-        }
-    }
-
     /*
         子ノードを解析するために、終了タグに到達するまでループ内で parse_node を再帰的に呼び出す
     */
     fn parse_nodes(&mut self) -> Vec<dom::Node> {
-        let mut nodes = vec![];
+        let mut nodes: Vec<dom::Node> = vec![];
         loop {
             self.consume_whitespace();
             if self.eof() || self.starts_with("</") {
                 break;
             }
             nodes.push(self.parse_node());
+            println!("{:?}", nodes);
         }
         nodes
     }
@@ -90,7 +83,7 @@ impl Parser {
         assert!(self.parse_tag_name() == tag_name);
         assert!(self.consume_char() == '>');
 
-        return dom::Node::elem(tag_name, attrs, children);
+        dom::Node::elem(tag_name, attrs, children)
     }
 
     /*
@@ -105,12 +98,12 @@ impl Parser {
     /*
         name="value" のペアを返す
     */
-    fn parse_attr(&mut self) -> Result<(String, String), ()> {
+    fn parse_attr(&mut self) -> (String, String) {
         let name = self.parse_tag_name();
         assert_eq!(self.consume_char(), '=');
 
         let value = self.parse_attr_value();
-        Ok((name, value))
+        (name, value)
     }
 
     /*
@@ -118,7 +111,10 @@ impl Parser {
     */
     fn parse_attr_value(&mut self) -> String {
         let open_quote = self.consume_char();
-        self.consume_while(|c| c != open_quote)
+        assert!(open_quote == '"' || open_quote == '\'');
+        let value = self.consume_while(|c| c != open_quote);
+        assert_eq!(self.consume_char(), open_quote);
+        value
     }
 
     /*
@@ -132,12 +128,8 @@ impl Parser {
             if self.next_char() == '>' {
                 break;
             }
-            match self.parse_attr() {
-                Ok(x) => {
-                    attributes.insert(x.0, x.1);
-                }
-                Err(()) => {}
-            }
+            let (name, value) = self.parse_attr();
+            attributes.insert(name, value);
         }
         attributes
     }
@@ -154,6 +146,7 @@ impl Parser {
             // posを進める && resultにpushする
             result.push(self.consume_char());
         }
+
         result
     }
 
@@ -188,15 +181,6 @@ impl Parser {
     fn eof(&self) -> bool {
         self.pos >= self.input.len()
     }
-}
-
-#[test]
-fn test_consume_char() {
-    let src = "令和";
-    let mut parser = Parser::new(src.to_string());
-
-    let consume_char = parser.consume_char();
-    assert_eq!(consume_char.to_string(), "令");
 }
 
 #[test]

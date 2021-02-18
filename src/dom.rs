@@ -45,7 +45,7 @@ pub enum NodeType {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementData {
     pub tag_name: String,
-    attributes: AttrMap,
+    pub attributes: AttrMap,
 }
 
 impl ElementData {
@@ -58,23 +58,6 @@ impl ElementData {
             Some(classlist) => classlist.split(' ').collect(),
             None => HashSet::new(),
         }
-    }
-}
-
-pub fn create_node_with_text(node_text: String) -> Node {
-    Node {
-        children: Vec::new(),
-        node_type: NodeType::Text(node_text),
-    }
-}
-
-pub fn create_node_with_attrs(tag_name: String, attrs: AttrMap, children: Vec<Node>) -> Node {
-    Node {
-        children: children,
-        node_type: NodeType::Element(ElementData {
-            tag_name: tag_name,
-            attributes: attrs,
-        }),
     }
 }
 
