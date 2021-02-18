@@ -9,7 +9,6 @@ fn main() {
     // let css = read_source("test.css".to_string());
 
     let root_node = browser::html::parse(html);
-
 }
 
 fn read_source(filename: String) -> String {
