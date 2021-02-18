@@ -1,7 +1,7 @@
 use dom;
 use error;
 
-pub trait HtmlParserTrait {
+pub trait HTMLParserTrait {
     fn parse_nodes(&mut self) -> Vec<dom::Node>;
 
     fn parse_node(&mut self) -> dom::Node;
@@ -14,7 +14,7 @@ pub trait HtmlParserTrait {
 
     fn parse_attr_value(&mut self) -> String;
 
-    fn parse_attributes(&mut self) -> dom::AttrMap;
+    fn parse_attributes(&mut self) -> Result<dom::AttrMap, error::Error>;
 
     fn consume_while<F>(&mut self, f: F) -> String
     where

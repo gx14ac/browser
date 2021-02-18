@@ -1,22 +1,22 @@
 use dom;
 use error;
-use interface::{self, HtmlParserTrait};
+use interface::{self, HTMLParserTrait};
 use std::collections::HashMap;
 
 #[derive(Debug)]
-struct HtmlParser {
+struct HTMLParser {
     position: usize,
     source: String,
 }
 
-pub fn NewHtmlParser(source: String) -> impl interface::HtmlParserTrait {
-    return HtmlParser {
+pub fn new_html_parser(source: String) -> impl interface::HTMLParserTrait {
+    return HTMLParser {
         position: 0,
         source: source,
     };
 }
 
-impl interface::HtmlParserTrait for HtmlParser {
+impl interface::HTMLParserTrait for HTMLParser {
     fn parse_nodes(&mut self) -> Vec<dom::Node> {
         let mut nodes: Vec<dom::Node> = vec![];
         loop {
@@ -45,7 +45,7 @@ impl interface::HtmlParserTrait for HtmlParser {
         // Opening Tag
         assert!(self.consume_char().unwrap() == '<');
         let tag_name = self.parse_tag_name();
-        let attrs = self.parse_attributes();
+        let attrs = self.parse_attributes().unwrap();
         assert!(self.consume_char().unwrap() == '>');
 
         // Contents
@@ -78,17 +78,24 @@ impl interface::HtmlParserTrait for HtmlParser {
         Ok((name, value))
     }
 
-    fn parse_attributes(&mut self) -> dom::AttrMap {
+    fn parse_attributes(&mut self) -> Result<dom::AttrMap, error::Error> {
         let mut attributes = HashMap::new();
         loop {
             self.consume_whitespace();
             if self.next_char().unwrap() == '>' {
                 break;
             }
-            let (name, value) = self.parse_attr().unwrap();
-            attributes.insert(name, value);
+
+            match self.parse_attr() {
+                Ok((name, value)) => {
+                    attributes.insert(name, value);
+                }
+                Err(err) => {
+                    panic!("{:?}", err);
+                }
+            }
         }
-        attributes
+        Ok(attributes)
     }
 
     fn consume_while<F>(&mut self, f: F) -> String
