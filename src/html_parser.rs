@@ -1,22 +1,17 @@
 use dom;
-use error;
-use interface::{self, HTMLParserTrait};
+use error::Error;
+use interface::HTMLParserTrait;
+use parser::{self, interface::DefaultParserTrait};
 use std::collections::HashMap;
 
-#[derive(Debug)]
-struct HTMLParser {
-    position: usize,
-    source: String,
-}
-
-pub fn new_html_parser(source: String) -> impl interface::HTMLParserTrait {
-    return HTMLParser {
+pub fn new_html_parser(source: String) -> impl HTMLParserTrait {
+    return parser::Parser {
         position: 0,
-        source: source,
+        source,
     };
 }
 
-impl interface::HTMLParserTrait for HTMLParser {
+impl HTMLParserTrait for parser::Parser {
     fn parse_nodes(&mut self) -> Vec<dom::Node> {
         let mut nodes: Vec<dom::Node> = vec![];
         loop {
@@ -69,16 +64,16 @@ impl interface::HTMLParserTrait for HTMLParser {
         value
     }
 
-    fn parse_attr(&mut self) -> Result<(String, String), error::Error> {
+    fn parse_attr(&mut self) -> Result<(String, String), Error> {
         let name = self.parse_tag_name();
         if self.consume_char()? != '=' {
-            return Err(error::Error::ReadError);
+            return Err(Error::ReadError);
         }
         let value = self.parse_attr_value();
         Ok((name, value))
     }
 
-    fn parse_attributes(&mut self) -> Result<dom::AttrMap, error::Error> {
+    fn parse_attributes(&mut self) -> Result<dom::AttrMap, Error> {
         let mut attributes = HashMap::new();
         loop {
             self.consume_whitespace();
@@ -98,49 +93,7 @@ impl interface::HTMLParserTrait for HTMLParser {
         Ok(attributes)
     }
 
-    fn consume_while<F>(&mut self, f: F) -> String
-    where
-        F: Fn(char) -> bool,
-    {
-        let mut result = String::new();
-
-        while !self.eof() && f(self.next_char().unwrap()) {
-            let consume_char = self.consume_char().unwrap();
-            result.push(consume_char);
-        }
-
-        result
-    }
-
     fn parse_tag_name(&mut self) -> String {
         self.consume_while(|c| c.is_alphanumeric())
-    }
-
-    fn consume_whitespace(&mut self) {
-        self.consume_while(char::is_whitespace);
-    }
-
-    // 現在の位置の文字列を取得し、位置を進める
-    fn consume_char(&mut self) -> Result<char, error::Error> {
-        let mut char_indicies = self.source[self.position..].char_indices();
-        let (_, cur_char) = char_indicies.next().unwrap();
-        let (next_pos, _) = char_indicies.next().unwrap_or((1, ' '));
-        self.position += next_pos;
-        Ok(cur_char)
-    }
-
-    fn next_char(&self) -> Result<char, error::Error> {
-        self.source[self.position..]
-            .chars()
-            .next()
-            .ok_or(error::Error::ReadError)
-    }
-
-    fn starts_with(&self, s: &str) -> bool {
-        self.source[self.position..].starts_with(s)
-    }
-
-    fn eof(&self) -> bool {
-        self.position >= self.source.len()
     }
 }

@@ -5,4 +5,6 @@ pub mod html_parser;
 pub mod interface;
 pub mod layout;
 pub mod painting;
+pub mod parser;
 pub mod style;
+pub mod style_sheet;

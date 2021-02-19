@@ -8,9 +8,10 @@ use browser::interface::HTMLParserTrait;
 
 fn main() {
     let html = read_source("test.html".to_string());
-    // let css = read_source("test.css".to_string());
+    let css = read_source("test.css".to_string());
 
     let root_node = browser::html_parser::new_html_parser(html).parse_nodes();
+    let root_node = browser::css::parse(css);
 }
 
 fn read_source(filename: String) -> String {

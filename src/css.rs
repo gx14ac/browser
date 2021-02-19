@@ -11,13 +11,6 @@ pub struct Rule {
     pub declarations: Vec<Declaration>,
 }
 
-/*
-    h1, h2, h3
-    #answer
-    div.hoge
-    などのSelector
-*/
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Selector {
     Simple(SimpleSelector),
@@ -254,14 +247,16 @@ impl Parser {
         self.consume_while(char::is_whitespace);
     }
 
-    fn consume_while<F>(&mut self, test: F) -> String
+    fn consume_while<F>(&mut self, f: F) -> String
     where
         F: Fn(char) -> bool,
     {
         let mut result = String::new();
-        while !self.eof() && test(self.next_char()) {
+        while !self.eof() && f(self.next_char()) {
+            println!("true");
             result.push(self.consume_char());
         }
+        println!("false");
         result
     }
 
