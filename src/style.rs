@@ -1,4 +1,4 @@
-// domにcssスタイルシートを適用する
+// domにcssスタイルシートを適用するファイル
 use dom::dom::{ElementData, Node, NodeType};
 use std::collections::HashMap;
 use style_sheet::interface::SelectorTrait;
@@ -8,7 +8,9 @@ use style_sheet::simple_selector::SimpleSelector;
 use style_sheet::style_sheet::Stylesheet;
 use style_sheet::util::Value;
 
-type PropertyMap = HashMap<String, Value>;
+use crate::style_sheet::css_parser;
+
+type CSSPropertyMap = HashMap<String, Value>;
 
 pub enum Display {
     Inline,
@@ -16,15 +18,22 @@ pub enum Display {
     None,
 }
 
+#[derive(Debug)]
+/*
+ 各タグに対応したのcssの値を取得する
+ node: dom node,
+ specified_values: cssのプロパティをKeyValue配列
+ children: 次のタグのStyledNode
+*/
 pub struct StyledNode<'a> {
     pub node: &'a Node,
-    pub specified_values: PropertyMap,
+    pub css_properties: CSSPropertyMap,
     pub children: Vec<StyledNode<'a>>,
 }
 
 impl<'a> StyledNode<'a> {
     pub fn value(&self, name: &str) -> Option<Value> {
-        self.specified_values.get(name).map(|v| v.clone())
+        self.css_properties.get(name).map(|v| v.clone())
     }
 
     pub fn display(&self) -> Display {
@@ -51,7 +60,7 @@ fn matches(elem: &ElementData, selector: &Selector) -> bool {
     }
 }
 
-// SimpleSelector(CSS) と ElementData(DOM)の各コンポーネントを調べる
+// cssで定義されているセレクターとdomのchildrenの各要素のタグの整合性の確認
 fn matches_simple_selector(elem: &ElementData, selector: &SimpleSelector) -> bool {
     // tagチェック
     if selector.tag_name.iter().any(|name| elem.tag_name != *name) {
@@ -97,10 +106,12 @@ fn matching_rules<'a>(elem: &ElementData, stylesheet: &'a Stylesheet) -> Vec<Mat
 pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<'a> {
     StyledNode {
         node: root,
-        specified_values: match root.node_type {
-            NodeType::Element(ref elem) => specified_values(elem, stylesheet),
+        css_properties: match root.node_type {
+            NodeType::Element(ref elem) => parse_css_property(elem, stylesheet),
             NodeType::Text(_) => HashMap::new(),
         },
+        // rootのchildrenには、<html>以外の要素が入ってる
+        // 再帰的に実行
         children: root
             .children
             .iter()
@@ -109,7 +120,7 @@ pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<
     }
 }
 
-fn specified_values(elem: &ElementData, stylesheet: &Stylesheet) -> PropertyMap {
+fn parse_css_property(elem: &ElementData, stylesheet: &Stylesheet) -> CSSPropertyMap {
     let mut values = HashMap::new();
     let mut rules = matching_rules(elem, stylesheet);
 
