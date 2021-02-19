@@ -3,6 +3,7 @@ use style_sheet::declaration::Declaration;
 use style_sheet::rule::Rule;
 use style_sheet::selector::{Selector, Specificity};
 use style_sheet::simple_selector::SimpleSelector;
+use style_sheet::style_sheet::Stylesheet;
 use style_sheet::util::{Unit, Value};
 
 pub trait SelectorTrait {
@@ -18,6 +19,7 @@ pub trait ValueTrait {
 }
 
 pub trait CSSParserTrait: DefaultParserTrait {
+    fn parse(&mut self) -> Stylesheet;
     fn parse_rules(&mut self) -> Vec<Rule>;
     fn parse_rule(&mut self) -> Rule;
     fn parse_simple_selector(&mut self) -> SimpleSelector;

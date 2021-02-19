@@ -5,6 +5,7 @@ use style_sheet::interface::{CSSParserTrait, SelectorTrait};
 use style_sheet::rule::Rule;
 use style_sheet::selector::Selector;
 use style_sheet::simple_selector::SimpleSelector;
+use style_sheet::style_sheet::Stylesheet;
 use style_sheet::util::{Color, Unit, Unit::*, Value};
 
 pub fn new_css_parser(source: String) -> impl CSSParserTrait {
@@ -15,6 +16,16 @@ pub fn new_css_parser(source: String) -> impl CSSParserTrait {
 }
 
 impl CSSParserTrait for Parser {
+    fn parse(&mut self) -> Stylesheet {
+        let mut parser = Parser {
+            position: 0,
+            source: self.source.clone(),
+        };
+        Stylesheet {
+            rules: parser.parse_rules(),
+        }
+    }
+
     fn parse_rules(&mut self) -> Vec<Rule> {
         let mut rules = Vec::new();
         loop {

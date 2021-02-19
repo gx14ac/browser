@@ -20,7 +20,6 @@ impl HTMLParserTrait for Parser {
         }
         .parse_nodes();
 
-        // If the document contains a root element, just return it. Otherwise, create one.
         if nodes.len() == 1 {
             nodes.swap_remove(0)
         } else {
