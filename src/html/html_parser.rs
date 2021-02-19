@@ -1,4 +1,4 @@
-use dom;
+use dom::dom::{AttrMap, Node};
 use error::Error;
 use interface::HTMLParserTrait;
 use parser::{self, interface::DefaultParserTrait};
@@ -12,8 +12,8 @@ pub fn new_html_parser(source: String) -> impl HTMLParserTrait {
 }
 
 impl HTMLParserTrait for parser::Parser {
-    fn parse_nodes(&mut self) -> Vec<dom::Node> {
-        let mut nodes: Vec<dom::Node> = vec![];
+    fn parse_nodes(&mut self) -> Vec<Node> {
+        let mut nodes: Vec<Node> = vec![];
         loop {
             self.consume_whitespace();
             if self.eof() || self.starts_with("</") {
@@ -25,18 +25,18 @@ impl HTMLParserTrait for parser::Parser {
         nodes
     }
 
-    fn parse_node(&mut self) -> dom::Node {
+    fn parse_node(&mut self) -> Node {
         match self.next_char().unwrap() {
             '<' => self.parse_element(),
             _ => self.parse_text(),
         }
     }
 
-    fn parse_text(&mut self) -> dom::Node {
-        dom::Node::text(self.consume_while(|c| c != '<'))
+    fn parse_text(&mut self) -> Node {
+        Node::text(self.consume_while(|c| c != '<'))
     }
 
-    fn parse_element(&mut self) -> dom::Node {
+    fn parse_element(&mut self) -> Node {
         // Opening Tag
         assert!(self.consume_char().unwrap() == '<');
         let tag_name = self.parse_tag_name();
@@ -53,7 +53,7 @@ impl HTMLParserTrait for parser::Parser {
         assert!(self.parse_tag_name() == tag_name);
         assert!(self.consume_char().unwrap() == '>');
 
-        dom::Node::elem(tag_name, attrs, children)
+        Node::elem(tag_name, attrs, children)
     }
 
     fn parse_attr_value(&mut self) -> String {
@@ -73,7 +73,7 @@ impl HTMLParserTrait for parser::Parser {
         Ok((name, value))
     }
 
-    fn parse_attributes(&mut self) -> Result<dom::AttrMap, Error> {
+    fn parse_attributes(&mut self) -> Result<AttrMap, Error> {
         let mut attributes = HashMap::new();
         loop {
             self.consume_whitespace();

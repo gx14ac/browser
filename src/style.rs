@@ -1,4 +1,4 @@
-use dom::{ElementData, Node, NodeType};
+use dom::dom::{ElementData, Node, NodeType};
 use std::collections::HashMap;
 use style_sheet::interface::SelectorTrait;
 use style_sheet::rule::Rule;
