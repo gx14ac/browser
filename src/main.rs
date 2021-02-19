@@ -1,9 +1,8 @@
 extern crate browser;
 
+use browser::html::interface::HTMLParserTrait;
 use std::fs::File;
 use std::io::Read;
-
-use browser::interface::HTMLParserTrait;
 
 fn main() {
     let html = read_source("test.html".to_string());

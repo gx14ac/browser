@@ -1,6 +1,6 @@
 use dom::dom::{AttrMap, Node};
 use error::Error;
-use interface::HTMLParserTrait;
+use html::interface::HTMLParserTrait;
 use parser::{self, interface::DefaultParserTrait};
 use std::collections::HashMap;
 
