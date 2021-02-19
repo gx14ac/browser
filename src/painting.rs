@@ -1,5 +1,5 @@
-use css::{Color, Value};
 use layout::{BoxType, LayoutBox, Rect};
+use style_sheet::util::{Color, Value};
 
 struct Canvas {
     pixels: Vec<Color>,

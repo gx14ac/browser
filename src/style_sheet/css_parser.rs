@@ -7,11 +7,6 @@ use style_sheet::selector::Selector;
 use style_sheet::simple_selector::SimpleSelector;
 use style_sheet::util::{Color, Unit, Unit::*, Value};
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct CSSParser {
-    pub rules: Vec<Rule>,
-}
-
 pub fn new_css_parser(source: String) -> impl CSSParserTrait {
     return Parser {
         position: 0,

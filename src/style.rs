@@ -1,6 +1,11 @@
-use css::{Rule, Selector, SimpleSelector, Specificity, Stylesheet, Value};
 use dom::{ElementData, Node, NodeType};
 use std::collections::HashMap;
+use style_sheet::interface::SelectorTrait;
+use style_sheet::rule::Rule;
+use style_sheet::selector::{Selector, Specificity};
+use style_sheet::simple_selector::SimpleSelector;
+use style_sheet::style_sheet::Stylesheet;
+use style_sheet::util::Value;
 
 type PropertyMap = HashMap<String, Value>;
 

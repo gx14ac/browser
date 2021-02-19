@@ -1,7 +1,8 @@
 pub mod css_parser;
-mod declaration;
-mod interface;
-mod rule;
-mod selector;
-mod simple_selector;
-mod util;
+pub mod declaration;
+pub mod interface;
+pub mod rule;
+pub mod selector;
+pub mod simple_selector;
+pub mod style_sheet;
+pub mod util;

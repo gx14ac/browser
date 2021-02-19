@@ -1,8 +1,7 @@
 extern crate browser;
 
-use std::default::Default;
 use std::fs::File;
-use std::io::{BufWriter, Read};
+use std::io::Read;
 
 use browser::interface::HTMLParserTrait;
 
@@ -11,7 +10,7 @@ fn main() {
     let css = read_source("test.css".to_string());
 
     let root_node = browser::html_parser::new_html_parser(html).parse_nodes();
-    let root_node = browser::css::parse(css);
+    let root_node = browser::style_sheet::css_parser::new_css_parser(css);
 }
 
 fn read_source(filename: String) -> String {

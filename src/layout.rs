@@ -1,9 +1,9 @@
 // style => 2次元空間の長方形の束に変換
 
-use css::Unit::Px;
-use css::Value::{Keyword, Length};
 use std::default::Default;
 use style::StyledNode;
+use style_sheet::interface::ValueTrait;
+use style_sheet::util::{Unit::*, Value::*};
 
 pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
