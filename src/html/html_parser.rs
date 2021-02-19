@@ -1,17 +1,33 @@
 use dom::dom::{AttrMap, Node};
 use error::Error;
 use html::interface::HTMLParserTrait;
-use parser::{self, interface::DefaultParserTrait};
+use parser::interface::DefaultParserTrait;
+use parser::Parser;
 use std::collections::HashMap;
 
 pub fn new_html_parser(source: String) -> impl HTMLParserTrait {
-    return parser::Parser {
+    return Parser {
         position: 0,
-        source,
+        source: source,
     };
 }
 
-impl HTMLParserTrait for parser::Parser {
+impl HTMLParserTrait for Parser {
+    fn parse(&mut self) -> Node {
+        let mut nodes = Parser {
+            position: 0,
+            source: self.source.clone(),
+        }
+        .parse_nodes();
+
+        // If the document contains a root element, just return it. Otherwise, create one.
+        if nodes.len() == 1 {
+            nodes.swap_remove(0)
+        } else {
+            Node::elem("html".to_string(), HashMap::new(), nodes)
+        }
+    }
+
     fn parse_nodes(&mut self) -> Vec<Node> {
         let mut nodes: Vec<Node> = vec![];
         loop {
@@ -20,7 +36,6 @@ impl HTMLParserTrait for parser::Parser {
                 break;
             }
             nodes.push(self.parse_node());
-            println!("{:?}", nodes);
         }
         nodes
     }
@@ -96,4 +111,26 @@ impl HTMLParserTrait for parser::Parser {
     fn parse_tag_name(&mut self) -> String {
         self.consume_while(|c| c.is_alphanumeric())
     }
+}
+
+#[test]
+fn test_html_parser() {
+    let src = "<html><body><head>aa</head></body></html>";
+    let node = new_html_parser(src.to_string()).parse();
+    assert_eq!(
+        node,
+        Node::elem(
+            "html".to_string(),
+            HashMap::new(),
+            vec![Node::elem(
+                "body".to_string(),
+                HashMap::new(),
+                vec![Node::elem(
+                    "head".to_string(),
+                    HashMap::new(),
+                    vec![Node::text("aa".to_string())],
+                ),],
+            ),],
+        ),
+    );
 }

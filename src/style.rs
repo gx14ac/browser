@@ -1,3 +1,4 @@
+// domにcssスタイルシートを適用する
 use dom::dom::{ElementData, Node, NodeType};
 use std::collections::HashMap;
 use style_sheet::interface::SelectorTrait;
@@ -16,9 +17,7 @@ pub enum Display {
 }
 
 pub struct StyledNode<'a> {
-    // Dom Nodeのポインター
     pub node: &'a Node,
-    // CSS プロパティ
     pub specified_values: PropertyMap,
     pub children: Vec<StyledNode<'a>>,
 }
@@ -45,6 +44,7 @@ impl<'a> StyledNode<'a> {
     }
 }
 
+// セレクターのマッチングチェック
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
     match *selector {
         Selector::Simple(ref simple_selector) => matches_simple_selector(elem, simple_selector),
@@ -94,7 +94,7 @@ fn matching_rules<'a>(elem: &ElementData, stylesheet: &'a Stylesheet) -> Vec<Mat
         .collect()
 }
 
-fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<'a> {
+pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<'a> {
     StyledNode {
         node: root,
         specified_values: match root.node_type {

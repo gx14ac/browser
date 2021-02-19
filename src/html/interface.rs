@@ -4,6 +4,8 @@ use error::Error;
 use crate::parser::interface::DefaultParserTrait;
 
 pub trait HTMLParserTrait: DefaultParserTrait {
+    fn parse(&mut self) -> Node;
+
     fn parse_nodes(&mut self) -> Vec<Node>;
 
     fn parse_node(&mut self) -> Node;
