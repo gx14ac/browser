@@ -1,7 +1,12 @@
 extern crate browser;
 
-use browser::{html::interface::HTMLParserTrait, style_sheet::interface::CSSParserTrait};
+use browser::{
+    html::interface::HTMLParserTrait,
+    layout::{layout_tree, Dimensions},
+    style_sheet::interface::CSSParserTrait,
+};
 
+use std::default::Default;
 use std::fs::File;
 use std::io::Read;
 
@@ -12,6 +17,14 @@ fn main() {
     let root_node = browser::html::html_parser::new_html_parser(html).parse();
     let stylesheet = browser::style_sheet::css_parser::new_css_parser(css).parse();
     let style_root = browser::style::style_tree(&root_node, &stylesheet);
+
+    let mut dimensions: Dimensions = Default::default();
+    dimensions.content.width = 800.0;
+    dimensions.content.height = 600.0;
+
+    let layout_tree = layout_tree(&style_root, dimensions);
+
+    println!("{:?}", layout_tree);
 }
 
 fn read_source(filename: String) -> String {

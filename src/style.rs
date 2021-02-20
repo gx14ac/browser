@@ -8,8 +8,6 @@ use style_sheet::simple_selector::SimpleSelector;
 use style_sheet::style_sheet::Stylesheet;
 use style_sheet::util::Value;
 
-use crate::style_sheet::css_parser;
-
 type CSSPropertyMap = HashMap<String, Value>;
 
 pub enum Display {
@@ -21,7 +19,7 @@ pub enum Display {
 #[derive(Debug)]
 /*
  各タグに対応したのcssの値を取得する
- node: dom node,
+ node: domのnode,
  specified_values: cssのプロパティをKeyValue配列
  children: 次のタグのStyledNode
 */
@@ -53,7 +51,6 @@ impl<'a> StyledNode<'a> {
     }
 }
 
-// セレクターのマッチングチェック
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
     match *selector {
         Selector::Simple(ref simple_selector) => matches_simple_selector(elem, simple_selector),
@@ -85,7 +82,6 @@ fn matches_simple_selector(elem: &ElementData, selector: &SimpleSelector) -> boo
     return true;
 }
 
-// Styleの構築
 type MatchedRule<'a> = (Specificity, &'a Rule);
 
 fn match_rule<'a>(elem: &ElementData, rule: &'a Rule) -> Option<MatchedRule<'a>> {
@@ -110,8 +106,6 @@ pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<
             NodeType::Element(ref elem) => parse_css_property(elem, stylesheet),
             NodeType::Text(_) => HashMap::new(),
         },
-        // rootのchildrenには、<html>以外の要素が入ってる
-        // 再帰的に実行
         children: root
             .children
             .iter()
